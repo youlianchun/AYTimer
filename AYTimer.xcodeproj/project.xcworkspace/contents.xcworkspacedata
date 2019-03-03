@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:NCTimer.xcodeproj">
+      location = "self:/Volumes/YLCHUN_HD/Codes/Github/NCTimer/AYTimer.xcodeproj">
    </FileRef>
 </Workspace>

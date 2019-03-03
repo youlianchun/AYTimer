@@ -1,15 +1,15 @@
 //
-//  NCTimer.m
-//  NCTimer
+//  AYTimer.m
+//  AYTimer
 //
 //  Created by YLCHUN on 16/10/18.
 //  Copyright © 2016年 ylchun. All rights reserved.
 //
 
-#import "NCTimer.h"
-static dispatch_queue_t NCTimer_Queue;//计时器并发队列
+#import "AYTimer.h"
+static dispatch_queue_t AYTimer_Queue;//计时器并发队列
 
-@interface NCTimer ()
+@interface AYTimer ()
 
 @property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSUInteger count;
@@ -18,17 +18,17 @@ static dispatch_queue_t NCTimer_Queue;//计时器并发队列
 @property (nonatomic) NSTimeInterval interval;
 @property (nonatomic, weak) id target;
 @property (nonatomic) SEL selector;
-@property (nonatomic) NCTimerStatus status;
+@property (nonatomic) AYTimerStatus status;
 @property (nonatomic, weak) NSRunLoop *runLoop;
 @property (nonatomic, readonly) dispatch_queue_t queue;
 
 -(instancetype)initWithCount:(NSUInteger)count interval:(NSTimeInterval)interval target:(id)target selector:(SEL)selector;
 @end
 
-@implementation NCTimer
+@implementation AYTimer
 
-+ (NCTimer *)timerWithCount:(NSUInteger)count interval:(NSTimeInterval)interval target:(id)target selector:(SEL)selector{
-    NCTimer *timer = [[NCTimer alloc] initWithCount:count interval:interval target:target selector:selector];
++ (AYTimer *)timerWithCount:(NSUInteger)count interval:(NSTimeInterval)interval target:(id)target selector:(SEL)selector{
+    AYTimer *timer = [[AYTimer alloc] initWithCount:count interval:interval target:target selector:selector];
     return timer;
 }
 
@@ -42,16 +42,16 @@ static dispatch_queue_t NCTimer_Queue;//计时器并发队列
         self.target = target;
         self.interval = interval;
         self.selector = selector;
-        self.status = NCTimerCancel;
+        self.status = AYTimerCancel;
     }
     return self;
 }
 
 -(dispatch_queue_t)queue {
-    if (!NCTimer_Queue) {
-        NCTimer_Queue = dispatch_queue_create("com.NCTimer.thread", DISPATCH_QUEUE_CONCURRENT);
+    if (!AYTimer_Queue) {
+        AYTimer_Queue = dispatch_queue_create("com.AYTimer.thread", DISPATCH_QUEUE_CONCURRENT);
     }
-    return NCTimer_Queue;
+    return AYTimer_Queue;
 }
 
 -(void)_initTimer{
@@ -85,37 +85,37 @@ static dispatch_queue_t NCTimer_Queue;//计时器并发队列
 }
 
 -(BOOL)resume {
-    if (self.status == NCTimerCancel) {
+    if (self.status == AYTimerCancel) {
         [self _initTimer];
-        self.status = NCTimerResume;
+        self.status = AYTimerResume;
         return true;
     }
-    if (self.status == NCTimerSuspend) {
+    if (self.status == AYTimerSuspend) {
         [self.timer setFireDate:[NSDate date]];
-        self.status = NCTimerResume;
+        self.status = AYTimerResume;
         return true;
     }
     return false;
 }
 
 -(BOOL)suspend {
-    if (self.status == NCTimerResume) {
+    if (self.status == AYTimerResume) {
         [self.timer setFireDate:[NSDate distantFuture]];//暂停
-        self.status = NCTimerSuspend;
+        self.status = AYTimerSuspend;
         return true;
     }
     return false;
 }
 
 -(BOOL)cancel {
-    if (self.status == NCTimerResume || self.status == NCTimerSuspend) {
+    if (self.status == AYTimerResume || self.status == AYTimerSuspend) {
         if (self.timer) {
             if (self.timer.valid) {
                 [self.timer invalidate];
             }
             self.timer = nil;
         }
-        self.status = NCTimerCancel;
+        self.status = AYTimerCancel;
         return true;
     }
     return false;
